@@ -1,0 +1,141 @@
+{
+	"info": {
+		"_postman_id": "df59e92d-0490-4380-9485-706c2cd6d156",
+		"name": "Todo API",
+		"description": "Postman collection for local Todo REST API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34198269"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/health",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all todos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/todos",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get todo by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/todos/1",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"todos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create todo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Example\",\n    \"description\": \"5 kg of coffee\",\n    \"completed\": false\n}"
+				},
+				"url": {
+					"raw": "{{baseURL}}/todos",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update todo",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Example\",\n    \"description\": \"10 kg of fruits\",\n    \"completed\": true\n}"
+				},
+				"url": {
+					"raw": "{{baseURL}}/todos/1",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"todos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete todo",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/todos/1",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"todos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "localhost:8080",
+			"type": "string"
+		}
+	]
+}
