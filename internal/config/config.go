@@ -7,11 +7,11 @@ import (
 )
 
 type Config struct {
+	Host string
 	Port string
-	DB   string
 }
 
-func MustLoadConfig() (*Config, error) {
+func MustLoad() (*Config, error) {
 
 	err := loadEnv(".env")
 	if err != nil {
@@ -19,6 +19,7 @@ func MustLoadConfig() (*Config, error) {
 	}
 
 	return &Config{
+		Host: getEnv("HOST", "localhost"),
 		Port: getEnv("PORT", "8080"),
 	}, nil
 }
@@ -35,10 +36,8 @@ func loadEnv(path string) error {
 	if err != nil {
 		return err
 	}
-	err = file.Close()
-	if err != nil {
-		return err
-	}
+
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
