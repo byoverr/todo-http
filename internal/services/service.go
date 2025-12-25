@@ -30,6 +30,8 @@ func NewService() *Store {
 	}
 }
 
+var _ Service = (*Store)(nil)
+
 func (s *Store) GetAll(ctx context.Context) ([]models.Todo, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -51,35 +53,45 @@ func (s *Store) GetByID(ctx context.Context, id int) (models.Todo, error) {
 }
 
 func (s *Store) Create(ctx context.Context, t models.Todo) (models.Todo, error) {
-	if t.Title == "" {
+	if strings.TrimSpace(t.Title) == "" {
 		return models.Todo{}, ErrMissingTitle
 	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	t.ID = s.nextID
 	t.Title = strings.TrimSpace(t.Title)
 	t.CreatedAt = time.Now()
-	t.UpdatedAt = time.Now()
-	s.nextID++
+	t.UpdatedAt = t.CreatedAt
+
 	s.todos[t.ID] = t
+	s.nextID++
 
 	return t, nil
 }
 
 func (s *Store) Update(ctx context.Context, id int, t models.Todo) (models.Todo, error) {
-	if t.Title == "" {
+	if strings.TrimSpace(t.Title) == "" {
 		return models.Todo{}, ErrMissingTitle
 	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	todo_to_update, ok := s.todos[id]
+
+	existing, ok := s.todos[id]
 	if !ok {
 		return models.Todo{}, ErrNotFound
 	}
-	todo_to_update.Title = t.Title
-	todo_to_update.Description = t.Description
-	todo_to_update.UpdatedAt = time.Now()
-	return t, nil
+
+	existing.Title = strings.TrimSpace(t.Title)
+	existing.Description = t.Description
+	existing.IsCompleted = t.IsCompleted
+	existing.UpdatedAt = time.Now()
+
+	s.todos[id] = existing
+
+	return existing, nil
 }
 
 func (s *Store) Delete(ctx context.Context, id int) error {

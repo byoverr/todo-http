@@ -32,7 +32,6 @@ func New(
 
 	handlers.Register(mux, api)
 
-	log.Info(address(cfg.Host, cfg.Port))
 	server := &http.Server{
 		Addr:         address(cfg.Host, cfg.Port),
 		Handler:      middleware.LoggingMiddleware(log, mux),
@@ -48,10 +47,10 @@ func New(
 }
 
 func (a App) MustRun() {
-	a.log.Info("todo.app.MustRun", slog.String("Server started on port ", a.cfg.Port))
+	a.log.Info("Server started", slog.String("op", "todo.app.MustRun"), slog.String("port", a.cfg.Port))
 
 	if err := a.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		a.log.Info("todo.app.MustRun", "ListenAndServe error: ", err.Error())
+		a.log.Info("ListenAndServe error", slog.String("op", "todo.app.MustRun"), slog.String("err", err.Error()))
 		panic(err)
 	}
 }
@@ -62,9 +61,9 @@ func (a App) GracefulStop() {
 	defer cancel()
 
 	if err := a.server.Shutdown(ctx); err != nil {
-		a.log.Error("todo.app.GracefulStop", "Graceful shutdown failed", "error", err.Error())
+		a.log.Error("Graceful shutdown failed", slog.String("op", "todo.app.GracefulStop"), slog.String("error", err.Error()))
 	} else {
-		a.log.Info("todo.app.GracefulStop", "Gracefully stopped")
+		a.log.Info("Gracefully stopped", slog.String("op", "todo.app.GracefulStop"))
 	}
 }
 
