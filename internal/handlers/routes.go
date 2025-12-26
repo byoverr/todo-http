@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,7 +10,10 @@ import (
 func Register(mux *http.ServeMux, api *ServerAPI) {
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("ok"))
+		_, err := w.Write([]byte("ok"))
+		if err != nil {
+			api.log.Warn("failed to write health response", slog.String("error", err.Error()))
+		}
 	})
 	mux.HandleFunc("GET /todos", func(w http.ResponseWriter, r *http.Request) {
 		api.GetTodos(r.Context(), w, r)

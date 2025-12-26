@@ -33,6 +33,13 @@ func NewService() *Store {
 var _ Service = (*Store)(nil)
 
 func (s *Store) GetAll(ctx context.Context) ([]models.Todo, error) {
+
+	select {
+	case <-ctx.Done():
+		return []models.Todo{}, ctx.Err()
+	default:
+	}
+
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	list := make([]models.Todo, 0, len(s.todos))
@@ -43,6 +50,13 @@ func (s *Store) GetAll(ctx context.Context) ([]models.Todo, error) {
 }
 
 func (s *Store) GetByID(ctx context.Context, id int) (models.Todo, error) {
+
+	select {
+	case <-ctx.Done():
+		return models.Todo{}, ctx.Err()
+	default:
+	}
+
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	t, ok := s.todos[id]
@@ -53,6 +67,13 @@ func (s *Store) GetByID(ctx context.Context, id int) (models.Todo, error) {
 }
 
 func (s *Store) Create(ctx context.Context, t models.Todo) (models.Todo, error) {
+
+	select {
+	case <-ctx.Done():
+		return models.Todo{}, ctx.Err()
+	default:
+	}
+
 	if strings.TrimSpace(t.Title) == "" {
 		return models.Todo{}, ErrMissingTitle
 	}
@@ -72,6 +93,13 @@ func (s *Store) Create(ctx context.Context, t models.Todo) (models.Todo, error) 
 }
 
 func (s *Store) Update(ctx context.Context, id int, t models.Todo) (models.Todo, error) {
+
+	select {
+	case <-ctx.Done():
+		return models.Todo{}, ctx.Err()
+	default:
+	}
+
 	if strings.TrimSpace(t.Title) == "" {
 		return models.Todo{}, ErrMissingTitle
 	}
@@ -95,6 +123,13 @@ func (s *Store) Update(ctx context.Context, id int, t models.Todo) (models.Todo,
 }
 
 func (s *Store) Delete(ctx context.Context, id int) error {
+
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.todos[id]; !ok {

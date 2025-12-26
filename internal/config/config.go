@@ -3,6 +3,7 @@ package config
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -32,12 +33,18 @@ func getEnv(key, defaultVal string) string {
 }
 
 func loadEnv(path string) error {
-	file, err := os.Open(path)
+	cleanPath := filepath.Clean(path)
+	file, err := os.Open(cleanPath)
 	if err != nil {
 		return err
 	}
 
-	defer file.Close()
+	defer func() {
+		closeErr := file.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
