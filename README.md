@@ -62,7 +62,11 @@ docker run --name todo-app -p 8080:8080 todo-server
 # make docker-build-and-run
 ```
 ### Стандартный билд
+Есть возможность поменять порт сервера, пример в .env.example
 ```shell
+# Копирование .env файла
+cp .env.example .env
+
 go build -o bin/main cmd/todo-server/main.go
 go run cmd/todo-server/main.go
 # or
