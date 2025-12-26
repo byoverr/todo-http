@@ -1,0 +1,73 @@
+package config
+
+import (
+	"bufio"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+type Config struct {
+	Host string
+	Port string
+}
+
+func MustLoad() (*Config, error) {
+
+	err := loadEnv(".env")
+	if err != nil {
+		return nil, err
+	}
+
+	return &Config{
+		Host: getEnv("HOST", "localhost"),
+		Port: getEnv("PORT", "8080"),
+	}, nil
+}
+
+func getEnv(key, defaultVal string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultVal
+}
+
+func loadEnv(path string) error {
+	cleanPath := filepath.Clean(path)
+	file, err := os.Open(cleanPath)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		closeErr := file.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		if _, exists := os.LookupEnv(key); !exists {
+
+			err = os.Setenv(key, value)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return scanner.Err()
+}

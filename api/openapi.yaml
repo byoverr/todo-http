@@ -1,0 +1,171 @@
+openapi: 3.1.0
+info:
+  title: Todo API
+  description: Postman collection for local Todo REST API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /health:
+    get:
+      summary: Проверка состояния сервера
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ok
+
+  /todos:
+    get:
+      summary: Получить список всех задач
+      responses:
+        "200":
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+
+    post:
+      summary: Создать новую задачу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        "201":
+          description: Задача успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        "400":
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /todos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: Идентификатор задачи
+    get:
+      summary: Получить задачу по идентификатору
+      responses:
+        "200":
+          description: Задача найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        "404":
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Обновить задачу по идентификатору
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        "200":
+          description: Задача успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        "400":
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Удалить задачу по идентификатору
+      responses:
+        "204":
+          description: Задача успешно удалена
+        "404":
+          description: Задача не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "Example"
+        description:
+          type: string
+          example: "5 kg of coffee"
+        completed:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-12-26T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-12-26T12:10:00Z"
+      required:
+        - id
+        - title
+        - completed
+        - createdAt
+        - updatedAt
+
+    TodoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Example"
+        description:
+          type: string
+          example: "10 kg of fruits"
+        completed:
+          type: boolean
+          example: false
+      required:
+        - title
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "todo not found"
