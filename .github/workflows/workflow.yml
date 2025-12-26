@@ -31,4 +31,4 @@ jobs:
         run: docker build -t todo-server .
 
       - name: Run tests inside container
-        run: docker run --rm todo-server go test ./... -v
+        run: docker build -f test.Dockerfile -t todo-server-test .
